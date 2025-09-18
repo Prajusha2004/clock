@@ -1,8 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#FFD700">
+
   <meta charset="UTF-8">
   <title>3D Stylish Clock with Alarm</title>
+  <link rel="icon" href="clock.jpg" type="image/x-icon">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
       margin: 0;
@@ -14,14 +19,12 @@
       min-height: 100vh;
       transition: background 1s ease;
       overflow: hidden;
+      padding: 10px;
     }
 
-    /* Sunny Background */
     .daytime {
       background: radial-gradient(circle at top, #FFD700, #87CEEB 70%);
     }
-
-    /* Starry Night Background */
     .nighttime {
       background: radial-gradient(circle at bottom, #0D0D2B, #000);
     }
@@ -39,18 +42,17 @@
     }
 
     .clock {
-      width: 20rem;   /* smaller clock */
-      height: 20rem;
-      border: 14px solid white;
+      width: min(80vw, 20rem);
+      height: min(80vw, 20rem);
+      border: 10px solid white;
       border-radius: 50%;
       position: relative;
-      padding: 1.5rem;
+      padding: 1rem;
       background: radial-gradient(circle at center, #fefefe, #ddd);
       box-shadow:
         inset -3px -3px 10px rgba(255,255,255,0.7),
         inset 3px 3px 10px rgba(0,0,0,0.3),
-        0 10px 15px rgba(0,0,0,0.5);
-      transition: background 1s ease, border-color 1s ease;
+        0 6px 10px rgba(0,0,0,0.4);
     }
 
     .clock-face {
@@ -65,66 +67,38 @@
       top: 50%;
       transform-origin: 100%;
       transform: rotate(90deg);
-      transition: all 0.05s;
-      transition-timing-function: cubic-bezier(0.1, 2.7, 0.58, 1);
       border-radius: 10px;
     }
 
-    .hour-hand {
-      width: 25%;
-      height: 8px;
-      background: linear-gradient(to right, #333, #111);
-      left: 25%;
-      z-index: 3;
-    }
-
-    .min-hand {
-      width: 35%;
-      height: 5px;
-      background: linear-gradient(to right, #444, #000);
-      left: 15%;
-      z-index: 2;
-    }
-
-    .second-hand {
-      width: 40%;
-      height: 2px;
-      background: red;
-      left: 10%;
-      z-index: 1;
-      box-shadow: 0 0 10px rgba(255,0,0,0.7);
-    }
+    .hour-hand { width: 25%; height: 6px; background: linear-gradient(to right, #333, #111); left: 25%; z-index: 3; }
+    .min-hand  { width: 35%; height: 4px; background: linear-gradient(to right, #444, #000); left: 15%; z-index: 2; }
+    .second-hand { width: 40%; height: 2px; background: red; left: 10%; z-index: 1; box-shadow: 0 0 6px rgba(255,0,0,0.6); }
 
     .center {
-      width: 14px;
-      height: 14px;
+      width: 12px; height: 12px;
       background: radial-gradient(circle, #444, #000);
       border-radius: 50%;
       position: absolute;
-      top: 50%;
-      left: 50%;
+      top: 50%; left: 50%;
       transform: translate(-50%, -50%);
       z-index: 5;
     }
 
     .number {
       position: absolute;
-      font-size: 1.2rem;
+      font-size: clamp(0.8rem, 2vw, 1.2rem);
       font-weight: bold;
       color: #222;
       transform: translate(-50%, -50%);
-      user-select: none;
-      pointer-events: none;
-      text-shadow: 0 2px 3px rgba(0,0,0,0.5);
+      text-shadow: 0 1px 2px rgba(0,0,0,0.5);
     }
 
     .digital-clock {
-      margin-top: 15px;
-      font-size: 2rem;
+      margin-top: 10px;
+      font-size: clamp(1.2rem, 5vw, 2rem);
       font-weight: bold;
       color: white;
-      text-shadow: 0 0 10px black;
-      transition: color 1s ease;
+      text-shadow: 0 0 6px black;
     }
 
     .alarm-box {
@@ -133,33 +107,45 @@
       background: rgba(255,255,255,0.15);
       border-radius: 8px;
       color: white;
-      box-shadow: 0 0 8px rgba(0,0,0,0.4);
+      box-shadow: 0 0 6px rgba(0,0,0,0.4);
+      text-align: center;
+      width: 100%;
+      max-width: 320px;
     }
 
-    .alarm-box input {
-      padding: 4px;
+    .alarm-box input, .alarm-box select {
+      padding: 6px;
       border-radius: 5px;
       border: none;
-      margin-right: 8px;
-      font-size: 0.9rem;
+      margin: 5px;
+      font-size: 1rem;
+      width: 100%;
+      box-sizing: border-box;
     }
 
     .alarm-box button {
-      padding: 5px 10px;
+      padding: 8px 12px;
       border: none;
       border-radius: 6px;
       background: #ff4d4d;
       color: white;
       font-weight: bold;
       cursor: pointer;
+      margin: 4px 2px;
+      width: 30%;
+      min-width: 70px;
     }
+    .alarm-box button:hover { background: #ff1a1a; }
 
-    .alarm-box button:hover {
-      background: #ff1a1a;
+    .alarm-list {
+      margin-top: 10px;
+      font-size: 0.9rem;
+      color: white;
     }
   </style>
 </head>
 <body>
+  <!-- Clock -->
   <div class="clock">
     <div class="clock-face">
       <div class="hand hour-hand"></div>
@@ -169,18 +155,33 @@
     </div>
   </div>
 
+  <!-- Digital Clock -->
   <div class="digital-clock" id="digitalClock">00:00:00</div>
+  <div id="a2hs-container" style="display:none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; z-index: 1000;">
+  ➕ Add to Home Screen
+</div>
+
 
   <!-- Alarm Box -->
   <div class="alarm-box">
     <input type="time" id="alarmTime">
-    <button onclick="setAlarm()">Set Alarm</button>
+    <select id="alarmSoundSelect">
+      <option value="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3">🔔 Bell</option>
+      <option value="https://www.soundjay.com/button/beep-07.wav">📢 Beep</option>
+      <option value="https://www.soundjay.com/phone/old-phone-ringing-01.mp3">☎ Old Phone</option>
+      <option value="https://www.soundjay.com/transportation/sounds/train-whistle-01.mp3">🚂 Train</option>
+      <option value="https://www.soundjay.com/nature/rain-01.mp3">🌧 Rain</option>
+      <option value="https://www.soundjay.com/nature/ocean-wave-2.mp3">🌊 Ocean</option>
+      <option value="https://cdn.pixabay.com/download/audio/2021/09/02/audio_4db86816a7.mp3">🎐 Wind Chime</option>
+      <option value="https://cdn.pixabay.com/download/audio/2022/03/15/audio_6a74fbbba5.mp3">🎶 Flute</option>
+    </select>
+    <button onclick="setAlarm()">Set</button>
+    <button onclick="stopAlarm()">Stop</button>
+    <button onclick="clearAlarms()">Clear</button>
+    <div class="alarm-list" id="alarmList"></div>
   </div>
 
-  <!-- Alarm Sound -->
-  <audio id="alarmSound">
-    <source src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3" type="audio/mpeg">
-  </audio>
+  <audio id="alarmSound" loop></audio>
 
   <script>
     const secondHand = document.querySelector('.second-hand');
@@ -189,13 +190,14 @@
     const clockFace = document.querySelector('.clock-face');
     const digitalClock = document.getElementById('digitalClock');
     const alarmSound = document.getElementById('alarmSound');
-    let alarmTime = null;
-    let alarmTimeout = null;
+    const alarmListDiv = document.getElementById('alarmList');
+    let alarms = [];
+    let alarmRinging = false;
 
     // Place numbers dynamically
     for (let i = 1; i <= 12; i++) {
       const angle = (i / 12) * 2 * Math.PI;
-      const radius = 42; // smaller radius for smaller clock
+      const radius = 42;
       const x = 50 + radius * Math.sin(angle);
       const y = 50 - radius * Math.cos(angle);
 
@@ -237,26 +239,59 @@
         generateStars();
       }
 
-      // Check Alarm
-      if (alarmTime === `${hh}:${mm}` && ss === "00") {
-        alarmSound.play();
-        alert("⏰ Alarm ringing!");
-        alarmTime = null; // reset after ringing
-      }
+      // Check alarms
+      alarms.forEach(alarm => {
+        if (alarm.time === `${hh}:${mm}` && ss === "00" && !alarmRinging) {
+          alarmSound.src = alarm.sound;
+          alarmSound.play();
+          alarmRinging = true;
+          alert("⏰ Alarm ringing: " + alarm.time);
+        }
+      });
     }
 
     function setAlarm() {
       const input = document.getElementById("alarmTime").value;
+      const sound = document.getElementById("alarmSoundSelect").value;
       if (input) {
-        alarmTime = input;
+        alarms.push({ time: input, sound: sound });
+        renderAlarms();
         alert("✅ Alarm set for " + input);
       }
     }
 
-    // Generate stars at night
+    function renderAlarms() {
+      alarmListDiv.innerHTML = "";
+      alarms.forEach((a, index) => {
+        const div = document.createElement("div");
+        div.textContent = `⏰ ${a.time}`;
+        const btn = document.createElement("button");
+        btn.textContent = "❌";
+        btn.onclick = () => { alarms.splice(index, 1); renderAlarms(); };
+        div.appendChild(btn);
+        alarmListDiv.appendChild(div);
+      });
+    }
+
+    function stopAlarm() {
+      if (alarmRinging) {
+        alarmSound.pause();
+        alarmSound.currentTime = 0;
+        alarmRinging = false;
+        alert("⏹ Alarm stopped.");
+      }
+    }
+
+    function clearAlarms() {
+      alarms = [];
+      stopAlarm();
+      renderAlarms();
+      alert("❌ All alarms cleared.");
+    }
+
     function generateStars() {
       if (document.querySelectorAll('.star').length === 0) {
-        for (let i = 0; i < 60; i++) {
+        for (let i = 0; i < 40; i++) {
           const star = document.createElement('div');
           star.className = 'star';
           star.style.width = star.style.height = Math.random() * 2 + 1 + 'px';
@@ -270,6 +305,41 @@
 
     setInterval(setDate, 1000);
     setDate();
-  </script>
+
+    if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js')
+    .then(() => console.log('Service Worker Registered'));
+}
+let deferredPrompt; // stores the event
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  // Prevent the default mini-infobar from appearing
+  e.preventDefault();
+  // Stash the event so it can be triggered later
+  deferredPrompt = e;
+
+  // Show your custom "Add to Home Screen" button
+  showAddToHomeScreenButton();
+});
+function showAddToHomeScreenButton() {
+  const a2hsBtn = document.getElementById('a2hs-container');
+  a2hsBtn.style.display = 'block';
+
+  a2hsBtn.addEventListener('click', async () => {
+    a2hsBtn.style.display = 'none';
+    if (deferredPrompt) {
+      deferredPrompt.prompt(); // show native prompt
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        console.log('User accepted the A2HS prompt');
+      } else {
+        console.log('User dismissed the A2HS prompt');
+      }
+      deferredPrompt = null;
+    }
+  });
+}
+
+</script>
 </body>
 </html>
