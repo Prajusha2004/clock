@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#FFD700">
-
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>3D Stylish Clock with Alarm</title>
   <link rel="icon" href="clock.jpg" type="image/x-icon">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#FFD700">
   <style>
     body {
       margin: 0;
@@ -22,12 +21,8 @@
       padding: 10px;
     }
 
-    .daytime {
-      background: radial-gradient(circle at top, #FFD700, #87CEEB 70%);
-    }
-    .nighttime {
-      background: radial-gradient(circle at bottom, #0D0D2B, #000);
-    }
+    .daytime { background: radial-gradient(circle at top, #FFD700, #87CEEB 70%); }
+    .nighttime { background: radial-gradient(circle at bottom, #0D0D2B, #000); }
 
     .star {
       position: absolute;
@@ -36,10 +31,7 @@
       animation: twinkle 2s infinite ease-in-out alternate;
     }
 
-    @keyframes twinkle {
-      from { opacity: 0.2; }
-      to { opacity: 1; }
-    }
+    @keyframes twinkle { from { opacity: 0.2; } to { opacity: 1; } }
 
     .clock {
       width: min(80vw, 20rem);
@@ -55,51 +47,17 @@
         0 6px 10px rgba(0,0,0,0.4);
     }
 
-    .clock-face {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      transform: translateY(-3px);
-    }
+    .clock-face { position: relative; width: 100%; height: 100%; transform: translateY(-3px); }
 
-    .hand {
-      position: absolute;
-      top: 50%;
-      transform-origin: 100%;
-      transform: rotate(90deg);
-      border-radius: 10px;
-    }
-
+    .hand { position: absolute; top: 50%; transform-origin: 100%; transform: rotate(90deg); border-radius: 10px; }
     .hour-hand { width: 25%; height: 6px; background: linear-gradient(to right, #333, #111); left: 25%; z-index: 3; }
-    .min-hand  { width: 35%; height: 4px; background: linear-gradient(to right, #444, #000); left: 15%; z-index: 2; }
+    .min-hand { width: 35%; height: 4px; background: linear-gradient(to right, #444, #000); left: 15%; z-index: 2; }
     .second-hand { width: 40%; height: 2px; background: red; left: 10%; z-index: 1; box-shadow: 0 0 6px rgba(255,0,0,0.6); }
 
-    .center {
-      width: 12px; height: 12px;
-      background: radial-gradient(circle, #444, #000);
-      border-radius: 50%;
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 5;
-    }
+    .center { width: 12px; height: 12px; background: radial-gradient(circle, #444, #000); border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 5; }
+    .number { position: absolute; font-size: clamp(0.8rem, 2vw, 1.2rem); font-weight: bold; color: #222; transform: translate(-50%, -50%); text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
 
-    .number {
-      position: absolute;
-      font-size: clamp(0.8rem, 2vw, 1.2rem);
-      font-weight: bold;
-      color: #222;
-      transform: translate(-50%, -50%);
-      text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-    }
-
-    .digital-clock {
-      margin-top: 10px;
-      font-size: clamp(1.2rem, 5vw, 2rem);
-      font-weight: bold;
-      color: white;
-      text-shadow: 0 0 6px black;
-    }
+    .digital-clock { margin-top: 10px; font-size: clamp(1.2rem, 5vw, 2rem); font-weight: bold; color: white; text-shadow: 0 0 6px black; }
 
     .alarm-box {
       margin-top: 12px;
@@ -137,14 +95,28 @@
     }
     .alarm-box button:hover { background: #ff1a1a; }
 
-    .alarm-list {
-      margin-top: 10px;
-      font-size: 0.9rem;
+    .alarm-list { margin-top: 10px; font-size: 0.9rem; color: white; }
+
+    /* Add to Home Screen button */
+    #a2hs-container {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.85);
       color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      z-index: 1000;
+      font-weight: bold;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
     }
   </style>
 </head>
 <body>
+
   <!-- Clock -->
   <div class="clock">
     <div class="clock-face">
@@ -157,10 +129,6 @@
 
   <!-- Digital Clock -->
   <div class="digital-clock" id="digitalClock">00:00:00</div>
-  <div id="a2hs-container" style="display:none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; z-index: 1000;">
-  ➕ Add to Home Screen
-</div>
-
 
   <!-- Alarm Box -->
   <div class="alarm-box">
@@ -183,7 +151,11 @@
 
   <audio id="alarmSound" loop></audio>
 
+  <!-- Add to Home Screen -->
+  <div id="a2hs-container">➕ Add to Home Screen</div>
+
   <script>
+    // --- Clock & Alarm ---
     const secondHand = document.querySelector('.second-hand');
     const minsHand = document.querySelector('.min-hand');
     const hourHand = document.querySelector('.hour-hand');
@@ -195,12 +167,11 @@
     let alarmRinging = false;
 
     // Place numbers dynamically
-    for (let i = 1; i <= 12; i++) {
+    for(let i = 1; i <= 12; i++){
       const angle = (i / 12) * 2 * Math.PI;
       const radius = 42;
       const x = 50 + radius * Math.sin(angle);
       const y = 50 - radius * Math.cos(angle);
-
       const number = document.createElement('div');
       number.className = 'number';
       number.textContent = i;
@@ -209,28 +180,19 @@
       clockFace.appendChild(number);
     }
 
-    function setDate() {
+    function setDate(){
       const now = new Date();
-      const seconds = now.getSeconds();
-      const mins = now.getMinutes();
-      const hour = now.getHours();
+      const s = now.getSeconds(), m = now.getMinutes(), h = now.getHours();
+      secondHand.style.transform = `rotate(${((s/60)*360)+90}deg)`;
+      minsHand.style.transform = `rotate(${((m/60)*360)+((s/60)*6)+90}deg)`;
+      hourHand.style.transform = `rotate(${((h%12)/12*360)+((m/60)*30)+90}deg)`;
 
-      const secondsDegrees = ((seconds / 60) * 360) + 90;
-      const minsDegrees = ((mins / 60) * 360) + ((seconds/60)*6) + 90;
-      const hourDegrees = ((hour % 12) / 12) * 360 + ((mins/60) * 30) + 90;
-
-      secondHand.style.transform = `rotate(${secondsDegrees}deg)`;
-      minsHand.style.transform = `rotate(${minsDegrees}deg)`;
-      hourHand.style.transform = `rotate(${hourDegrees}deg)`;
-
-      // Digital clock
-      const hh = String(hour).padStart(2, '0');
-      const mm = String(mins).padStart(2, '0');
-      const ss = String(seconds).padStart(2, '0');
+      const hh = String(h).padStart(2,'0');
+      const mm = String(m).padStart(2,'0');
+      const ss = String(s).padStart(2,'0');
       digitalClock.textContent = `${hh}:${mm}:${ss}`;
 
-      // Background switch
-      if (hour >= 6 && hour < 18) {
+      if(h >= 6 && h < 18){
         document.body.classList.add("daytime");
         document.body.classList.remove("nighttime");
       } else {
@@ -239,9 +201,8 @@
         generateStars();
       }
 
-      // Check alarms
       alarms.forEach(alarm => {
-        if (alarm.time === `${hh}:${mm}` && ss === "00" && !alarmRinging) {
+        if(alarm.time === `${hh}:${mm}` && ss === "00" && !alarmRinging){
           alarmSound.src = alarm.sound;
           alarmSound.play();
           alarmRinging = true;
@@ -250,31 +211,31 @@
       });
     }
 
-    function setAlarm() {
+    function setAlarm(){
       const input = document.getElementById("alarmTime").value;
       const sound = document.getElementById("alarmSoundSelect").value;
-      if (input) {
-        alarms.push({ time: input, sound: sound });
+      if(input){
+        alarms.push({time: input, sound: sound});
         renderAlarms();
         alert("✅ Alarm set for " + input);
       }
     }
 
-    function renderAlarms() {
+    function renderAlarms(){
       alarmListDiv.innerHTML = "";
-      alarms.forEach((a, index) => {
+      alarms.forEach((a,i) => {
         const div = document.createElement("div");
         div.textContent = `⏰ ${a.time}`;
         const btn = document.createElement("button");
         btn.textContent = "❌";
-        btn.onclick = () => { alarms.splice(index, 1); renderAlarms(); };
+        btn.onclick = () => { alarms.splice(i,1); renderAlarms(); };
         div.appendChild(btn);
         alarmListDiv.appendChild(div);
       });
     }
 
-    function stopAlarm() {
-      if (alarmRinging) {
+    function stopAlarm(){
+      if(alarmRinging){
         alarmSound.pause();
         alarmSound.currentTime = 0;
         alarmRinging = false;
@@ -282,64 +243,54 @@
       }
     }
 
-    function clearAlarms() {
+    function clearAlarms(){
       alarms = [];
       stopAlarm();
       renderAlarms();
       alert("❌ All alarms cleared.");
     }
 
-    function generateStars() {
-      if (document.querySelectorAll('.star').length === 0) {
-        for (let i = 0; i < 40; i++) {
+    function generateStars(){
+      if(document.querySelectorAll('.star').length === 0){
+        for(let i=0;i<40;i++){
           const star = document.createElement('div');
-          star.className = 'star';
-          star.style.width = star.style.height = Math.random() * 2 + 1 + 'px';
-          star.style.top = Math.random() * window.innerHeight + 'px';
-          star.style.left = Math.random() * window.innerWidth + 'px';
-          star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+          star.className='star';
+          star.style.width = star.style.height = (Math.random()*2 + 1)+'px';
+          star.style.top = Math.random()*window.innerHeight + 'px';
+          star.style.left = Math.random()*window.innerWidth + 'px';
+          star.style.animationDuration = (Math.random()*3 + 2)+'s';
           document.body.appendChild(star);
         }
       }
     }
 
-    setInterval(setDate, 1000);
+    setInterval(setDate,1000);
     setDate();
 
-    if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js')
-    .then(() => console.log('Service Worker Registered'));
-}
-let deferredPrompt; // stores the event
-
-window.addEventListener('beforeinstallprompt', (e) => {
-  // Prevent the default mini-infobar from appearing
-  e.preventDefault();
-  // Stash the event so it can be triggered later
-  deferredPrompt = e;
-
-  // Show your custom "Add to Home Screen" button
-  showAddToHomeScreenButton();
-});
-function showAddToHomeScreenButton() {
-  const a2hsBtn = document.getElementById('a2hs-container');
-  a2hsBtn.style.display = 'block';
-
-  a2hsBtn.addEventListener('click', async () => {
-    a2hsBtn.style.display = 'none';
-    if (deferredPrompt) {
-      deferredPrompt.prompt(); // show native prompt
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') {
-        console.log('User accepted the A2HS prompt');
-      } else {
-        console.log('User dismissed the A2HS prompt');
-      }
-      deferredPrompt = null;
+    // --- Service Worker ---
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.register('./sw.js')
+        .then(() => console.log('Service Worker Registered'))
+        .catch(err => console.error('SW registration failed:', err));
     }
-  });
-}
 
-</script>
+    // --- Add to Home Screen ---
+    let deferredPrompt;
+    const a2hsBtn = document.getElementById('a2hs-container');
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      a2hsBtn.style.display = 'block';
+    });
+
+    a2hsBtn.addEventListener('click', async () => {
+      a2hsBtn.style.display = 'none';
+      deferredPrompt.prompt();
+      const choiceResult = await deferredPrompt.userChoice;
+      console.log(choiceResult.outcome);
+      deferredPrompt = null;
+    });
+  </script>
+
 </body>
 </html>
